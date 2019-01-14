@@ -119,14 +119,14 @@ class Ui_MainWindow(object):
                 sql_insert_query = """ INSERT INTO `simple_table`
                           (`name`, `index_no`, `birthday`, `address`) VALUES (%s,%s,%s,%s)"""
                 
-                current_Date = datetime.now()
                 insert_data = (name, index, birthday, address)
                         
                 cursor = conn.cursor(prepared=True)
-                result = cursor.execute(sql_insert_query, insert_data)
+                cursor.execute(sql_insert_query, insert_data)
                 conn.commit()
                 print('Data inserted')
-
+        except ConnectionError:
+            print('Connection Error! ')
 
         except mysql.connector.Error as error:
             conn.rollback()

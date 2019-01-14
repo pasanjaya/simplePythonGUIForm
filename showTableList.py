@@ -14,18 +14,22 @@ class Ui_ShowWindow(object):
 
     def setupUi(self, ShowWindow):
         ShowWindow.setObjectName("ShowWindow")
-        ShowWindow.resize(808, 417)
+        ShowWindow.setFixedSize(808, 440)
         self.centralwidget = QtWidgets.QWidget(ShowWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
         self.tableWidget.setGeometry(QtCore.QRect(10, 10, 781, 371))
-        self.tableWidget.setRowCount(10)
         self.tableWidget.setColumnCount(5)
         self.tableWidget.setObjectName("tableWidget")
+        lables = ['ID', 'Name', 'Index No.', 'Birthday', 'Address']
+        self.tableWidget.setHorizontalHeaderLabels(lables)
         self.tableWidget.horizontalHeader().setVisible(True)
+        self.tableWidget.verticalHeader().setVisible(False)
         self.tableWidget.horizontalHeader().setCascadingSectionResizes(False)
+        self.tableWidget.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        self.tableWidget.horizontalHeader().setSectionResizeMode(4, QtWidgets.QHeaderView.Stretch)
         self.showBtn = QtWidgets.QPushButton(self.centralwidget)
-        self.showBtn.setGeometry(QtCore.QRect(680, 350, 98, 29))
+        self.showBtn.setGeometry(QtCore.QRect(690, 385, 100, 29))
         self.showBtn.setObjectName("showBtn")
         ShowWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(ShowWindow)
@@ -49,18 +53,19 @@ class Ui_ShowWindow(object):
 
             if conn.is_connected():
 
-                sql = "SELECT * FROM `simple_table`"
+                sql = "SELECT `stu_id`, `name`, `index_no`, `birthday`, `address`  FROM `simple_table`"
 
                 cursor = conn.cursor()
                 cursor.execute(sql)
                 records = cursor.fetchall()
-                print(records)
                 self.tableWidget.setRowCount(0)
                 for row_number, row_data in enumerate(records):
                     self.tableWidget.insertRow(row_number)
                     for column_number, data in enumerate(row_data):
                         self.tableWidget.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
                         
+        except ConnectionError:
+            print('Connection Error! ')
 
         except mysql.connector.Error as error:
             conn.rollback()
@@ -71,12 +76,3 @@ class Ui_ShowWindow(object):
                 cursor.close()
                 conn.close()
                 print('Connection Closed')
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    ShowWindow = QtWidgets.QMainWindow()
-    ui = Ui_ShowWindow()
-    ui.setupUi(ShowWindow)
-    ShowWindow.show()
-    sys.exit(app.exec_())
